@@ -1,0 +1,4 @@
+setup
+=====
+
+My setup script
