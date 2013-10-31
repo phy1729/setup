@@ -112,11 +112,16 @@ case $(uname -s) in
 esac
 
 # Get Dotfiles
-if [ ! -f ~/.ssh/id_rsa.pub ]; then
-	echo "No RSA key. Generating one now."
+if [ ! -f ~/.ssh/id_rsa.pub -a ! -f ~/.ssh/id_dsa.pub ]; then
+	echo "No SSH key. Generating one now."
 	ssh-keygen -t rsa -b 4096
 fi
-cat ~/.ssh/id_rsa.pub
+if [ -f ~/.ssh/id_rsa.pub ]; then
+	cat ~/.ssh/id_rsa.pub
+else
+	cat ~/.ssh/id_dsa.pub
+fi
+
 case $(uname -s) in
 	OpenBSD)
 		read dummyvar?"Copy the key to bitbucket."
