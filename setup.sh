@@ -10,10 +10,14 @@ case $(uname -s) in
 		fi
 		echo "Installing zsh."
 		brew install zsh
-		echo "Adding zsh to /etc/shells"
-		sudo /bin/sh -c 'echo '/usr/local/bin/zsh' >> /etc/shells'
-		echo "Changing shell to zsh."
-		chsh -s "/usr/local/bin/zsh"
+		if [ ! $(grep '/usr/local/bin/zsh' /etc/shells) ]; then
+			echo "Adding zsh to /etc/shells"
+			sudo /bin/sh -c 'echo '/usr/local/bin/zsh' >> /etc/shells'
+		fi
+		if [ $(dscl /Search -read "/Users/$USER" UserShell | awk '{print $2}') != '/usr/local/bin/zsh' ]; then
+			echo "Changing shell to zsh."
+			chsh -s "/usr/local/bin/zsh"
+		fi
 		echo "Installing git."
 		brew install git
 		echo "Installing vim"
@@ -52,8 +56,10 @@ case $(uname -s) in
 			$install curl
 			echo "Installing zsh."
 			$install zsh
-			echo "Changing shell to zsh."
-			chsh -s "/usr/bin/zsh"
+			if [ $(awk -F: "/$(whoami)/"'{print $7}' /etc/passwd) != '/usr/bin/zsh' ]; then
+				echo "Changing shell to zsh."
+				chsh -s "/usr/bin/zsh"
+			fi
 
 			if $desktop; then
 				echo "Installing i3"
@@ -102,8 +108,10 @@ case $(uname -s) in
 		fi
 		echo "Installing zsh."
 		sudo pkg_add zsh
-		echo "Changing shell to zsh."
-		chsh -s "/usr/local/bin/zsh"
+		if [ $(awk -F: "/$(whoami)/"'{print $7}' /etc/passwd) != '/usr/local/bin/zsh' ]; then
+			echo "Changing shell to zsh."
+			chsh -s "/usr/local/bin/zsh"
+		fi
 		echo "Installing git."
 		sudo pkg_add git
 		echo "Installing vim"
