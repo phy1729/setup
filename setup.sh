@@ -12,7 +12,7 @@ case $(uname -s) in
 		brew install zsh
 		if [ ! $(grep '/usr/local/bin/zsh' /etc/shells) ]; then
 			echo "Adding zsh to /etc/shells"
-			sudo /bin/sh -c 'echo '/usr/local/bin/zsh' >> /etc/shells'
+			sudo /bin/sh -c 'echo /usr/local/bin/zsh >> /etc/shells'
 		fi
 		if [ $(dscl /Search -read "/Users/$USER" UserShell | awk '{print $2}') != '/usr/local/bin/zsh' ]; then
 			echo "Changing shell to zsh."
