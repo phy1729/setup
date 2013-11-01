@@ -130,11 +130,17 @@ case $(uname -s) in
 		read -p "Copy the key to bitbucket." dummyvar
 		;;
 esac
-echo "Git'ing dotfiles"
-git clone git@bitbucket.org:phy1729/dotfiles.git ~/.dotfiles
+if [ ! -d ~/.dotfiles ]; then
+	echo "Git'ing dotfiles"
+	git clone git@bitbucket.org:phy1729/dotfiles.git ~/.dotfiles
+else
+	git --git-dir=~/.dotfiles pull --ff-only
+fi
 ~/.dotfiles/bin/dfm
 
 # Update vundle
-echo "Git'ing Vundle"
-git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+if [ ! -d ~/.vim/bundle/vundle ]; then
+	echo "Git'ing Vundle"
+	git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+fi
 vim -u NONE +'silent! source ~/.vimrc' +BundleInstall! +qa
