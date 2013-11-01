@@ -142,7 +142,7 @@ if [ ! -d ~/.dotfiles ]; then
 	echo "Git'ing dotfiles"
 	git clone git@bitbucket.org:phy1729/dotfiles.git ~/.dotfiles
 else
-	git --git-dir=~/.dotfiles pull --ff-only
+	git --git-dir=$HOME/.dotfiles/.git/ --work-tree=$HOME/.dotfiles pull --ff-only
 fi
 ~/.dotfiles/bin/dfm
 
