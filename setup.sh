@@ -23,6 +23,8 @@ case $(uname -s) in
 		echo "Installing vim"
 		brew install mercurial
 		brew install vim
+		echo "Installing tmux"
+		brew install tmux
 		# Add cronjob to update brew
 		line="0	*	*	*	*	/usr/local/bin/brew update 1> /dev/null 2> /dev/null; /usr/local/bin/brew upgrade 1> /dev/null; /usr/local/bin/brew cleanup 1> /dev/null;"
 		if ! crontab -l | grep -Fx "$line" - 1>/dev/null; then
@@ -55,6 +57,8 @@ case $(uname -s) in
 			$install git
 			echo "Installing ntp"
 			$install ntp
+			echo "Installing tmux"
+			$install tmux
 			echo "Installing vim"
 			$install $vim
 			$install curl
@@ -120,6 +124,7 @@ case $(uname -s) in
 		sudo pkg_add git
 		echo "Installing vim"
 		sudo pkg_add vim--no_x11
+		# OpenBSD comes with tmux
 		;;
 esac
 
