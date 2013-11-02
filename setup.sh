@@ -24,7 +24,11 @@ case $(uname -s) in
 		brew install mercurial
 		brew install vim
 		# Add cronjob to update brew
-		echo -e $(crontab -l)"\n0\t*\t*\t*\t*\t/usr/local/bin/brew update 1> /dev/null; /usr/local/bin/brew upgrade 1> /dev/null; /usr/local/bin/brew cleanup 1> /dev/null;"
+		line="0	*	*	*	*	/usr/local/bin/brew update 1> /dev/null 2> /dev/null; /usr/local/bin/brew upgrade 1> /dev/null; /usr/local/bin/brew cleanup 1> /dev/null;"
+		if ! crontab -l | grep -Fx "$line" - 1>/dev/null; then
+			echo "$(crontab -l)\n$line" | crontab -
+
+		fi
 		;;
 
 	Linux)
