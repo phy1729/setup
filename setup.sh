@@ -1,6 +1,20 @@
 #!/bin/sh
 
-# Install git and vim
+isDesktop() {
+	while true; do
+		read -p "Desktop? [y/N] " desktop
+		if [ -z "$desktop" ]; then
+			return 1
+		fi
+		case "$desktop" in
+			Y*|y*)
+				return 0;;
+			N*|n*)
+				return 1;;
+		esac
+	done
+}
+
 case $(uname -s) in
 	Darwin)
 		if ! which -s brew; then
@@ -8,105 +22,32 @@ case $(uname -s) in
 			ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
 			PATH=$PATH:/usr/local/bin
 		fi
-		echo "Installing zsh."
-		brew install zsh
-		if [ ! $(grep '/usr/local/bin/zsh' /etc/shells) ]; then
-			echo "Adding zsh to /etc/shells"
-			sudo /bin/sh -c 'echo /usr/local/bin/zsh >> /etc/shells'
-		fi
-		if [ $(dscl /Search -read "/Users/$USER" UserShell | awk '{print $2}') != '/usr/local/bin/zsh' ]; then
-			echo "Changing shell to zsh."
-			chsh -s "/usr/local/bin/zsh"
-		fi
-		echo "Installing git."
-		brew install git
-		echo "Installing vim"
-		brew install mercurial
-		brew install vim
-		echo "Installing tmux"
-		brew install tmux
-		# Add cronjob to update brew
-		line="0	*	*	*	*	/usr/local/bin/brew update 1> /dev/null 2> /dev/null; /usr/local/bin/brew upgrade 1> /dev/null; /usr/local/bin/brew cleanup 1> /dev/null;"
-		if ! crontab -l | grep -Fx "$line" - 1>/dev/null; then
-			echo "$(crontab -l)\n$line" | crontab -
-
-		fi
+		install='brew install'
+		packages='git tmux vim zsh'
+		cron_line="0	*	*	*	*	/usr/local/bin/brew update 1> /dev/null 2> /dev/null; /usr/local/bin/brew upgrade 1> /dev/null; /usr/local/bin/brew cleanup 1> /dev/null;"
+		login_shell=$(dscl /Search -read "/Users/$USER" UserShell | awk '{print $2}')
+		desired_shell='/usr/local/bin/zsh'
 		;;
 
 	Linux)
 		if [ -x /usr/bin/apt-get ]; then
 			install='sudo apt-get -q -y install'
-			while true; do
-				read -p "Desktop? [y/N] " desktop
-				if [ -z "$desktop" ]; then
-					desktop=n
-				fi
-				case "$desktop" in
-					Y*|y*)
-						desktop=true ;
-						vim='vim-gtk'
-						break ;;
-					N*|n*)
-						desktop=false ;
-						vim='vim'
-						break ;;
-				esac
-			done
-
-			echo "Installing git."
-			$install git
-			echo "Installing ntp"
-			$install ntp
-			echo "Installing tmux"
-			$install tmux
-			echo "Installing vim"
-			$install $vim
-			$install curl
-			echo "Installing zsh."
-			$install zsh
-			if [ $(awk -F: "/$(whoami)/"'{print $7}' /etc/passwd) != '/usr/bin/zsh' ]; then
-				echo "Changing shell to zsh."
-				chsh -s "/usr/bin/zsh"
-			fi
-
-			if $desktop; then
-				echo "Installing i3"
-				$install xserver-xorg xterm xinit i3 xautolock i3lock
-				echo "Installing ALSA"
-				$install alsa-utils
-				echo "Installing calc"
-				$install apcalc
-				echo "Installing dropbox"
+			packages='git ntp tmux zsh'
+			if isDesktop; then
+				packages='xserver-xorg xterm xinit i3 xautolock i3lock alsa-utils apcalc dropbox dtrx evince git ranger rdesktop texlive vim-gtk zsh'
 				echo "deb http://linux.dropbox.com/debian squeeze main" | sudo tee /etc/apt/sources.list.d/dropbox.list
 				sudo apt-key adv --keyserver pgp.mit.edu --recv-keys 5044912E
 				sudo apt-get update > /dev/null
-				$install dropbox
-				dropbox start -i
-				echo "Installing dtrx"
-				$install dtrx
-				echo "Installing Evince"
-				$install evince
-				echo "Installing iceweasel"
-				echo "deb http://mozilla.debian.net/ wheezy-backports iceweasel-aurora" | sudo tee /etc/apt/sources.list.d/iceweasel.list
-				$install pkg-mozilla-archive-keyring
-				sudo apt-get update > /dev/null
-				sudo apt-get -q -y install -t wheezy-backports iceweasel
-				echo "Installing ranger"
-				$install ranger
-				echo "Installing rdesktop"
-				$install rdesktop
-				# echo "Installing Steam"
-				# http://media.steampowered.com/client/installer/steam.deb
-				echo "Installing TeX"
-				$install texlive
-				wget http://www.info.ucl.ac.be/~pecheur/soft/outlines.sty
-				sudo mv outlines.sty /usr/share/texlive/texmf-dist/tex/latex/base/outlines.sty
-				sudo texhash
+			else
+				packages='git vim zsh'
 			fi
 		else
 			echo "Non-apt Linux distro. Exiting"
 			exit
 		fi
+
+		login_shell=$(awk -F: "/$(whoami)/"'{print $7}' /etc/passwd)
+		desired_shell='/usr/bin/zsh'
 		;;
 
 	OpenBSD)
@@ -114,17 +55,47 @@ case $(uname -s) in
 			echo "No PKG_PATH set. Using rit.edu."
 			export PKG_PATH=ftp://filedump.se.rit.edu/pub/OpenBSD/$(uname -r)/packages/$(uname -p)/
 		fi
-		echo "Installing zsh."
-		sudo pkg_add zsh
-		if [ $(awk -F: "/$(whoami)/"'{print $7}' /etc/passwd) != '/usr/local/bin/zsh' ]; then
-			echo "Changing shell to zsh."
-			chsh -s "/usr/local/bin/zsh"
+		install='sudo pkg_add'
+		packages='git vim--no_x11 zsh'
+
+		login_shell=$(awk -F: "/$(whoami)/"'{print $7}' /etc/passwd)
+		desired_shell='/usr/local/bin/zsh'
+		;;
+esac
+
+for package in $packages; do
+	$install "$package"
+done
+
+if [ -x "$desired_shell" ]; then
+	# Mostly needed for Darwin but why not check them all
+	if [ ! "$(grep  -Fx "$desired_shell" /etc/shells)" ]; then
+		sudo /bin/sh -c 'echo '"$desired_shell"' >> /etc/shells'
+	fi
+	if [ "$login_shell" != "$desired_shell" ]; then
+		echo "Updating login shell"
+		chsh -s "$desired_shell"
+	fi
+fi
+
+if  [ -n "$cron_line" ] && (! crontab -l | grep -Fx "$cron_line" - 1>/dev/null); then
+	printf "%s\n%s" "$(crontab -l)" "$cron_line" | crontab -
+fi
+
+case $(uname -s) in
+	Linux)
+		if $desktop; then
+			dropbox start -i
+			echo "deb http://mozilla.debian.net/ wheezy-backports iceweasel-aurora" | sudo tee /etc/apt/sources.list.d/iceweasel.list
+			$install pkg-mozilla-archive-keyring
+			sudo apt-get update > /dev/null
+			sudo apt-get -q -y install -t wheezy-backports iceweasel
+			# echo "Installing Steam"
+			# http://media.steampowered.com/client/installer/steam.deb
+			wget http://www.info.ucl.ac.be/~pecheur/soft/outlines.sty
+			sudo mv outlines.sty /usr/share/texlive/texmf-dist/tex/latex/base/outlines.sty
+			sudo texhash
 		fi
-		echo "Installing git."
-		sudo pkg_add git
-		echo "Installing vim"
-		sudo pkg_add vim--no_x11
-		# OpenBSD comes with tmux
 		;;
 esac
 
@@ -138,15 +109,8 @@ if [ -f ~/.ssh/id_rsa.pub ]; then
 else
 	cat ~/.ssh/id_dsa.pub
 fi
+echo "Copy the key to bitbucket."; read
 
-case $(uname -s) in
-	OpenBSD)
-		read dummyvar?"Copy the key to bitbucket."
-		;;
-	*)
-		read -p "Copy the key to bitbucket." dummyvar
-		;;
-esac
 if [ ! -d ~/.dotfiles ]; then
 	echo "Git'ing dotfiles"
 	git clone git@bitbucket.org:phy1729/dotfiles.git ~/.dotfiles
