@@ -36,7 +36,7 @@ case $(uname -s) in
 			if isDesktop; then
 				packages='xserver-xorg xterm xinit i3 xautolock i3lock alsa-utils apcalc dropbox dtrx evince git ranger rdesktop texlive vim-gtk zsh'
 				echo "deb http://linux.dropbox.com/debian squeeze main" | sudo tee /etc/apt/sources.list.d/dropbox.list
-				sudo apt-key adv --keyserver pgp.mit.edu --recv-keys 5044912E
+				sudo apt-key adv --keyserver pgp.mit.edu --recv-keys 5044912E > /dev/null
 				sudo apt-get update > /dev/null
 			else
 				packages='git vim zsh'
@@ -64,7 +64,8 @@ case $(uname -s) in
 esac
 
 for package in $packages; do
-	$install "$package"
+	echo "Installing $package"
+	$install "$package" > /dev/null
 done
 
 if [ -x "$desired_shell" ]; then
@@ -87,9 +88,9 @@ case $(uname -s) in
 		if $desktop; then
 			dropbox start -i
 			echo "deb http://mozilla.debian.net/ wheezy-backports iceweasel-aurora" | sudo tee /etc/apt/sources.list.d/iceweasel.list
-			$install pkg-mozilla-archive-keyring
+			$install pkg-mozilla-archive-keyring > /dev/null
 			sudo apt-get update > /dev/null
-			sudo apt-get -q -y install -t wheezy-backports iceweasel
+			sudo apt-get -q -y install -t wheezy-backports iceweasel > /dev/null
 			# echo "Installing Steam"
 			# http://media.steampowered.com/client/installer/steam.deb
 			wget http://www.info.ucl.ac.be/~pecheur/soft/outlines.sty
