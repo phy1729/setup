@@ -34,11 +34,13 @@ case $(uname -s) in
 			install='sudo apt-get -q -y install'
 			packages='git ntp tmux zsh'
 			if isDesktop; then
+				desktop=true
 				packages='xserver-xorg xterm xinit i3 xautolock i3lock alsa-utils apcalc dropbox dtrx evince git ranger rdesktop texlive vim-gtk zsh'
 				echo "deb http://linux.dropbox.com/debian squeeze main" | sudo tee /etc/apt/sources.list.d/dropbox.list
 				sudo apt-key adv --keyserver pgp.mit.edu --recv-keys 5044912E > /dev/null
 				sudo apt-get update > /dev/null
 			else
+				desktop=
 				packages='git vim zsh'
 			fi
 		else
@@ -85,7 +87,7 @@ fi
 
 case $(uname -s) in
 	Linux)
-		if $desktop; then
+		if [ $desktop ]; then
 			dropbox start -i
 			echo "deb http://mozilla.debian.net/ wheezy-backports iceweasel-aurora" | sudo tee /etc/apt/sources.list.d/iceweasel.list
 			$install pkg-mozilla-archive-keyring > /dev/null
