@@ -109,7 +109,7 @@ if [ -f ~/.ssh/id_rsa.pub ]; then
 else
 	cat ~/.ssh/id_dsa.pub
 fi
-echo "Copy the key to bitbucket."; read
+echo "Copy the key to bitbucket."; read dummyvar
 
 if [ ! -d ~/.dotfiles ]; then
 	echo "Git'ing dotfiles"
