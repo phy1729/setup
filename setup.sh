@@ -48,7 +48,7 @@ case $(uname -s) in
 			exit
 		fi
 
-		login_shell=$(awk -F: "/$(whoami)/"'{print $7}' /etc/passwd)
+		login_shell=$(awk -F: "/$(id -un)/"'{print $7}' /etc/passwd)
 		desired_shell='/usr/bin/zsh'
 		;;
 
@@ -60,7 +60,7 @@ case $(uname -s) in
 		install='sudo pkg_add'
 		packages='git vim--no_x11 zsh'
 
-		login_shell=$(awk -F: "/$(whoami)/"'{print $7}' /etc/passwd)
+		login_shell=$(awk -F: "/$(id -un)/"'{print $7}' /etc/passwd)
 		desired_shell='/usr/local/bin/zsh'
 		;;
 esac
