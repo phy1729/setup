@@ -29,7 +29,12 @@ case $(uname -s) in
 		;;
 
 	Linux)
-		if [ -x /usr/bin/apt-get ]; then
+		if [ -x /usr/bin/pacman ]; then # Arch
+			sudo pacman -Syy > /dev/null
+			install='sudo pacman --noconfirm -S'
+			packages='git ntp tmux zsh'
+			desired_shell='/usr/bin/zsh'
+		elif [ -x /usr/bin/apt-get ]; then #Debian
 			install='sudo apt-get -q -y install'
 			packages='git ntp tmux zsh'
 			desired_shell='/usr/bin/zsh'
