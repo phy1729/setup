@@ -32,6 +32,7 @@ case $(uname -s) in
 		if [ -x /usr/bin/apt-get ]; then
 			install='sudo apt-get -q -y install'
 			packages='git ntp tmux zsh'
+			desired_shell='/usr/bin/zsh'
 			if isDesktop; then
 				desktop=true
 				packages='xserver-xorg xterm xinit i3 xautolock i3lock alsa-utils apcalc dropbox dtrx evince git ranger rdesktop texlive vim-gtk zsh'
@@ -46,8 +47,6 @@ case $(uname -s) in
 			echo "Non-apt Linux distro. Exiting"
 			exit
 		fi
-
-		desired_shell='/usr/bin/zsh'
 		;;
 
 	OpenBSD)
@@ -57,7 +56,6 @@ case $(uname -s) in
 		fi
 		install='sudo pkg_add'
 		packages='git vim--no_x11 zsh'
-
 		desired_shell='/usr/local/bin/zsh'
 		;;
 esac
