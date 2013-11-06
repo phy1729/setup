@@ -25,7 +25,6 @@ case $(uname -s) in
 		install='brew install'
 		packages='git tmux vim zsh'
 		cron_line="0	*	*	*	*	/usr/local/bin/brew update 1> /dev/null 2> /dev/null; /usr/local/bin/brew upgrade 1> /dev/null; /usr/local/bin/brew cleanup 1> /dev/null;"
-		login_shell=$(dscl /Search -read "/Users/$USER" UserShell | awk '{print $2}')
 		desired_shell='/usr/local/bin/zsh'
 		;;
 
@@ -48,7 +47,6 @@ case $(uname -s) in
 			exit
 		fi
 
-		login_shell=$(awk -F: "/$(id -un)/"'{print $7}' /etc/passwd)
 		desired_shell='/usr/bin/zsh'
 		;;
 
@@ -60,7 +58,6 @@ case $(uname -s) in
 		install='sudo pkg_add'
 		packages='git vim--no_x11 zsh'
 
-		login_shell=$(awk -F: "/$(id -un)/"'{print $7}' /etc/passwd)
 		desired_shell='/usr/local/bin/zsh'
 		;;
 esac
@@ -75,7 +72,7 @@ if [ -x "$desired_shell" ]; then
 	if [ ! "$(grep  -Fx "$desired_shell" /etc/shells)" ]; then
 		sudo /bin/sh -c 'echo '"$desired_shell"' >> /etc/shells'
 	fi
-	if [ "$login_shell" != "$desired_shell" ]; then
+	if [ "$SHELL" != "$desired_shell" ]; then
 		echo "Updating login shell"
 		chsh -s "$desired_shell"
 	fi
