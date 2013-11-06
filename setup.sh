@@ -44,7 +44,7 @@ case $(uname -s) in
 				packages='git vim zsh'
 			fi
 		else
-			echo "Non-apt Linux distro. Exiting"
+			echo "Not a supported Linux distro. Exiting"
 			exit
 		fi
 		;;
