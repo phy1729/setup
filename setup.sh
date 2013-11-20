@@ -100,7 +100,8 @@ case $(uname -s) in
 			# echo "Installing Steam"
 			# http://media.steampowered.com/client/installer/steam.deb
 			wget -q http://www.info.ucl.ac.be/~pecheur/soft/outlines.sty > /dev/null
-			sudo mv outlines.sty /usr/share/texlive/texmf-dist/tex/latex/base/outlines.sty
+			sudo mkdir -p /usr/local/share/texmf/tex/latex/base
+			sudo mv outlines.sty /usr/local/share/texmf/tex/latex/base/outlines.sty
 			sudo texhash > /dev/null
 		fi
 		;;
