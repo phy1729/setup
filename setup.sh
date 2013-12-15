@@ -1,4 +1,5 @@
 #!/bin/sh
+dotfiles_repo="https://github.com/phy1729/dotfiles.git"
 
 isDesktop() {
 	while true; do
@@ -121,7 +122,7 @@ echo "Copy the key to bitbucket."; read dummyvar
 
 if [ ! -d ~/.dotfiles ]; then
 	echo "Git'ing dotfiles"
-	git clone git@bitbucket.org:phy1729/dotfiles.git ~/.dotfiles
+	git clone "${dotfiles_repo}" ~/.dotfiles
 else
 	git --git-dir=$HOME/.dotfiles/.git/ --work-tree=$HOME/.dotfiles pull --ff-only
 fi
