@@ -60,8 +60,8 @@ case $(uname -s) in
 
 	OpenBSD)
 		if [ -z $PKG_PATH ]; then
-			echo "No PKG_PATH set. Using rit.edu."
-			export PKG_PATH=ftp://filedump.se.rit.edu/pub/OpenBSD/$(uname -r)/packages/$(uname -p)/
+			echo "No PKG_PATH set. Using esc7.net"
+			export PKG_PATH=http://mirror.esc7.net/pub/OpenBSD/$(uname -r)/packages/$(uname -p)/
 		fi
 		install='sudo pkg_add'
 		packages='git vim--no_x11 zsh'
