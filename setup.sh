@@ -1,5 +1,6 @@
 #!/bin/sh
 dotfiles_repo="https://github.com/phy1729/dotfiles.git"
+needs_ssh=0 # Set to 1 for true
 
 isDesktop() {
 	while true; do
@@ -14,6 +15,19 @@ isDesktop() {
 				return 1;;
 		esac
 	done
+}
+
+makeSSHKey() {
+	if [ ! -f ~/.ssh/id_rsa.pub -a ! -f ~/.ssh/id_dsa.pub ]; then
+		echo "No SSH key. Generating one now."
+		ssh-keygen -t rsa -b 4096
+	fi
+	if [ -f ~/.ssh/id_rsa.pub ]; then
+		cat ~/.ssh/id_rsa.pub
+	else
+		cat ~/.ssh/id_dsa.pub
+	fi
+	echo "Copy the key to dotfiles repo"; read dummyvar
 }
 
 case $(uname -s) in
@@ -109,17 +123,9 @@ case $(uname -s) in
 esac
 
 # Get Dotfiles
-if [ ! -f ~/.ssh/id_rsa.pub -a ! -f ~/.ssh/id_dsa.pub ]; then
-	echo "No SSH key. Generating one now."
-	ssh-keygen -t rsa -b 4096
+if [ ${needs_ssh} -eq 1 ]; then
+	makeSSHKey
 fi
-if [ -f ~/.ssh/id_rsa.pub ]; then
-	cat ~/.ssh/id_rsa.pub
-else
-	cat ~/.ssh/id_dsa.pub
-fi
-echo "Copy the key to bitbucket."; read dummyvar
-
 if [ ! -d ~/.dotfiles ]; then
 	echo "Git'ing dotfiles"
 	git clone "${dotfiles_repo}" ~/.dotfiles
