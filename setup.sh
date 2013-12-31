@@ -132,7 +132,7 @@ if [ ! -d ~/.dotfiles ]; then
 else
 	git --git-dir=$HOME/.dotfiles/.git/ --work-tree=$HOME/.dotfiles pull --ff-only
 fi
-git submodule update --init
+git --git-dir=$HOME/.dotfiles/.git/ --work-tree=$HOME/.dotfiles submodule update --init
 ~/.dotfiles/bin/dfm
 
 # Update vundle
