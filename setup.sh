@@ -38,7 +38,7 @@ case $(uname -s) in
 			PATH=$PATH:/usr/local/bin
 		fi
 		install='brew install'
-		packages='git tmux vim zsh'
+		packages='git tmux vim zsh ssh-copy-id'
 		cron_line="0	*	*	*	*	/usr/local/bin/brew update 1> /dev/null 2> /dev/null; /usr/local/bin/brew upgrade 1> /dev/null; /usr/local/bin/brew cleanup 1> /dev/null;"
 		desired_shell='/usr/local/bin/zsh'
 		;;
