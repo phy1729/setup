@@ -135,9 +135,10 @@ fi
 git --git-dir=$HOME/.dotfiles/.git/ --work-tree=$HOME/.dotfiles submodule update --init
 ~/.dotfiles/bin/dfm
 
-# Update vundle
-if [ ! -d ~/.vim/bundle/vundle ]; then
-	echo "Git'ing Vundle"
-	git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+# Update plug
+if [ ! -f ~/.vim/autoload/plug.vim ]; then
+	echo "Getting Plug"
+	mkdir -p ~/.vim/autoload
+	curl -fLo ~/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 fi
-vim -u NONE +'silent! source ~/.vimrc' +BundleInstall! +qa
+vim -u NONE +'silent! source ~/.vimrc' +PlugUpdate +qa
