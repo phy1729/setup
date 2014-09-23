@@ -132,7 +132,9 @@ if [ ! -d ~/.dotfiles ]; then
 else
 	git --git-dir=$HOME/.dotfiles/.git/ --work-tree=$HOME/.dotfiles pull --ff-only
 fi
-git --git-dir=$HOME/.dotfiles/.git/ --work-tree=$HOME/.dotfiles submodule update --init
+cd ~/.dotfiles
+git submodule update --init
+cd -
 ~/.dotfiles/bin/dfm install
 
 # Update plug
