@@ -133,7 +133,7 @@ else
 	git --git-dir=$HOME/.dotfiles/.git/ --work-tree=$HOME/.dotfiles pull --ff-only
 fi
 git --git-dir=$HOME/.dotfiles/.git/ --work-tree=$HOME/.dotfiles submodule update --init
-~/.dotfiles/bin/dfm
+~/.dotfiles/bin/dfm install
 
 # Update plug
 if [ ! -f ~/.vim/autoload/plug.vim ]; then
