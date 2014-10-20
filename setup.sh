@@ -128,13 +128,10 @@ if [ ${needs_ssh} -eq 1 ]; then
 fi
 if [ ! -d ~/.dotfiles ]; then
 	echo "Git'ing dotfiles"
-	git clone "${dotfiles_repo}" ~/.dotfiles
+	git clone --recurse-submodules "${dotfiles_repo}" ~/.dotfiles
 else
-	git --git-dir=$HOME/.dotfiles/.git/ --work-tree=$HOME/.dotfiles pull --ff-only
+	git --git-dir=$HOME/.dotfiles/.git/ --work-tree=$HOME/.dotfiles pull --ff-only --recurse-submodules=on-demand
 fi
-cd ~/.dotfiles
-git submodule update --init
-cd -
 ~/.dotfiles/bin/dfm install
 
 # Update plug
